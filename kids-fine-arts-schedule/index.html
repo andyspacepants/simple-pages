@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids Fine Arts Presentation Schedule</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; color: #333; }
+  h1 { text-align: center; margin-bottom: 20px; font-size: 1.6em; }
+  .controls { max-width: 1000px; margin: 0 auto 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .controls label { font-weight: 600; font-size: 0.9em; }
+  .controls select, .controls input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9em; }
+  .controls select { min-width: 180px; }
+  .controls input { flex: 1; min-width: 160px; }
+  .filter-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .tag { display: inline-flex; align-items: center; background: #4a90d9; color: #fff; padding: 3px 10px; border-radius: 14px; font-size: 0.82em; gap: 5px; }
+  .tag button { background: none; border: none; color: #fff; cursor: pointer; font-size: 1.1em; line-height: 1; }
+  .tag button:hover { color: #fdd; }
+  #clearAll { background: #e74c3c; color: #fff; border: none; padding: 4px 12px; border-radius: 14px; font-size: 0.82em; cursor: pointer; display: none; }
+  #clearAll:hover { background: #c0392b; }
+  table { width: 100%; max-width: 1000px; margin: 0 auto; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  th { background: #2c3e50; color: #fff; padding: 10px 14px; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; font-size: 0.9em; }
+  th:hover { background: #34495e; }
+  th .arrow { margin-left: 4px; font-size: 0.7em; }
+  td { padding: 9px 14px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f0f7ff; }
+  tr.selected td { background: #e8f4e8; }
+  td.name-cell { cursor: pointer; }
+  td.name-cell:hover { color: #4a90d9; text-decoration: underline; }
+  .count { text-align: center; max-width: 1000px; margin: 10px auto 0; font-size: 0.85em; color: #777; }
+  @media (max-width: 700px) {
+    table { font-size: 0.8em; }
+    th, td { padding: 7px 8px; }
+    .controls { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Kids Fine Arts Presentation Schedule</h1>
+
+<div class="controls">
+  <label>Filter by name:</label>
+  <select id="nameFilter">
+    <option value="">-- Add a person/group --</option>
+  </select>
+  <label>Search:</label>
+  <input type="text" id="searchBox" placeholder="Type to search...">
+</div>
+<div class="controls" id="tagBar">
+  <button id="clearAll" onclick="clearFilters()">Clear All</button>
+</div>
+<div class="count" id="count"></div>
+
+<table>
+  <thead>
+    <tr>
+      <th data-col="0">Individual/Group <span class="arrow"></span></th>
+      <th data-col="1">Category <span class="arrow"></span></th>
+      <th data-col="2">Room <span class="arrow"></span></th>
+      <th data-col="3">Date/Time <span class="arrow"></span></th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<script>
+const DATA = [
+  ["Bailey, Evelyn", "Worship Dance, Solo, Sr.", "Chapel Suite 1/2 307-309", "2026-03-14 11:25"],
+  ["Bailey, Evelyn", "Dramatized Quoting, Solo", "Chapel Suite 3 - 317", "2026-03-14 10:55"],
+  ["Bailey, Evelyn", "Short Sermon, Sr.", "Chapel Suite 3 - 317", "2026-03-14 09:07"],
+  ["Bailey, Olivia", "Worship Dance, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-14 10:40"],
+  ["Bailey, Olivia", "Dramatized Quoting, Solo", "Chapel Suite 3 - 317", "2026-03-14 11:03"],
+  ["Bible Buddies", "Worship Dance Troupe, Small", "Chapel Suite 1/2 307-309", "2026-03-14 10:17"],
+  ["Blevins, Emmeline", "Piano Solo, Jr.", "Chapel", "2026-03-14 08:40"],
+  ["Blossom, Whitney", "Worship Dance, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-14 10:35"],
+  ["Eaton, Micah", "Piano Solo, Classical", "Chapel", "2026-03-14 09:35"],
+  ["Gospel Girls", "Worship Dance Troupe, Small", "Chapel Suite 1/2 307-309", "2026-03-14 10:12"],
+  ["Meyers, Chloe", "American Sign Language Solo", "Chapel Suite 1/2 307-309", "2026-03-14 09:30"],
+  ["Meyers, Lily", "Worship Dance, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-14 10:45"],
+  ["Meyers, Lily", "Vocal Solo, Female, Jr.", "Students 113", "2026-03-14 12:01"],
+  ["Phillips, Kailyn", "Vocal Solo, Female, Jr.", "Students 113", "2026-03-14 12:33"],
+  ["Stepp, Jolena", "Piano Solo, Sr.", "Chapel", "2026-03-14 09:16"],
+  ["Tallon, Remy", "Vocal Solo, Female, Sr.", "Students 113", "2026-03-14 10:23"]
+];
+
+let sortCol = 3, sortAsc = true;
+let selectedNames = new Set();
+let searchText = "";
+
+// Build name dropdown
+const nameFilter = document.getElementById("nameFilter");
+const uniqueNames = [...new Set(DATA.map(r => r[0]))].sort();
+uniqueNames.forEach(n => {
+  const opt = document.createElement("option");
+  opt.value = n; opt.textContent = n;
+  nameFilter.appendChild(opt);
+});
+
+nameFilter.addEventListener("change", () => {
+  if (nameFilter.value) {
+    selectedNames.add(nameFilter.value);
+    nameFilter.value = "";
+    renderTags();
+    render();
+  }
+});
+
+document.getElementById("searchBox").addEventListener("input", e => {
+  searchText = e.target.value.toLowerCase();
+  render();
+});
+
+function renderTags() {
+  const bar = document.getElementById("tagBar");
+  bar.querySelectorAll(".tag").forEach(t => t.remove());
+  const clearBtn = document.getElementById("clearAll");
+  selectedNames.forEach(name => {
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.innerHTML = `${name} <button onclick="removeFilter('${name.replace(/'/g, "\\'")}')">&times;</button>`;
+    bar.insertBefore(tag, clearBtn);
+  });
+  clearBtn.style.display = selectedNames.size > 1 ? "inline-block" : "none";
+  // Hide already-selected from dropdown
+  nameFilter.querySelectorAll("option").forEach(opt => {
+    opt.hidden = opt.value && selectedNames.has(opt.value);
+  });
+}
+
+function removeFilter(name) {
+  selectedNames.delete(name);
+  renderTags();
+  render();
+}
+
+function clearFilters() {
+  selectedNames.clear();
+  renderTags();
+  render();
+}
+
+function formatTime(iso) {
+  const [date, time] = iso.split(" ");
+  const [y, m, d] = date.split("-");
+  let [h, min] = time.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${m}/${d}/${y} ${h}:${String(min).padStart(2,"0")} ${ampm}`;
+}
+
+function render() {
+  let rows = DATA.slice();
+
+  // Filter by selected names
+  if (selectedNames.size > 0) {
+    rows = rows.filter(r => {
+      const lastName = r[0].split(",")[0].trim();
+      return selectedNames.has(r[0]) || selectedNames.has(lastName);
+    });
+  }
+
+  // Filter by search text
+  if (searchText) {
+    rows = rows.filter(r => r.some(c => c.toLowerCase().includes(searchText)));
+  }
+
+  // Sort
+  rows.sort((a, b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (sortCol === 3) { /* date sort as string works with ISO format */ }
+    const cmp = va < vb ? -1 : va > vb ? 1 : 0;
+    return sortAsc ? cmp : -cmp;
+  });
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = rows.map(r => `<tr>
+    <td class="name-cell" onclick="toggleName('${r[0].replace(/'/g, "\\'")}')">${r[0]}</td>
+    <td>${r[1]}</td>
+    <td>${r[2]}</td>
+    <td>${formatTime(r[3])}</td>
+  </tr>`).join("");
+
+  document.getElementById("count").textContent = `Showing ${rows.length} of ${DATA.length} events`;
+
+  // Update arrows
+  document.querySelectorAll("th .arrow").forEach((el, i) => {
+    el.textContent = i === sortCol ? (sortAsc ? "\u25B2" : "\u25BC") : "";
+  });
+}
+
+function toggleName(name) {
+  if (selectedNames.has(name)) {
+    selectedNames.delete(name);
+  } else {
+    selectedNames.add(name);
+  }
+  renderTags();
+  render();
+}
+
+document.querySelectorAll("th").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = +th.dataset.col;
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = true; }
+    render();
+  });
+});
+
+// Initial render sorted by time
+render();
+</script>
+
+</body>
+</html>
