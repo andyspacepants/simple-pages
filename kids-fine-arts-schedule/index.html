@@ -6,65 +6,91 @@
 <title>Kids Fine Arts Presentation Schedule</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; color: #333; }
-  h1 { text-align: center; margin-bottom: 20px; font-size: 1.6em; }
-  .controls { max-width: 1000px; margin: 0 auto 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 16px; color: #333; }
+  h1 { text-align: center; margin-bottom: 16px; font-size: 1.4em; }
+  .controls { max-width: 600px; margin: 0 auto 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .controls label { font-weight: 600; font-size: 0.9em; }
   .controls select, .controls input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9em; }
   .controls select { min-width: 180px; }
-  .controls input { flex: 1; min-width: 160px; }
+  .controls input { flex: 1; min-width: 140px; }
   .filter-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tag { display: inline-flex; align-items: center; background: #4a90d9; color: #fff; padding: 3px 10px; border-radius: 14px; font-size: 0.82em; gap: 5px; }
   .tag button { background: none; border: none; color: #fff; cursor: pointer; font-size: 1.1em; line-height: 1; }
   .tag button:hover { color: #fdd; }
   #clearAll { background: #e74c3c; color: #fff; border: none; padding: 4px 12px; border-radius: 14px; font-size: 0.82em; cursor: pointer; display: none; }
   #clearAll:hover { background: #c0392b; }
-  table { width: 100%; max-width: 1000px; margin: 0 auto; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  th { background: #2c3e50; color: #fff; padding: 10px 14px; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; font-size: 0.9em; }
-  th:hover { background: #34495e; }
-  th .arrow { margin-left: 4px; font-size: 0.7em; }
-  td { padding: 9px 14px; border-bottom: 1px solid #eee; font-size: 0.9em; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #f0f7ff; }
-  tr.selected td { background: #e8f4e8; }
-  td.name-cell { cursor: pointer; }
-  td.name-cell:hover { color: #4a90d9; text-decoration: underline; }
-  .count { text-align: center; max-width: 1000px; margin: 10px auto 0; font-size: 0.85em; color: #777; }
-  @media (max-width: 700px) {
-    table { font-size: 0.8em; }
-    th, td { padding: 7px 8px; }
-    .controls { flex-direction: column; }
-  }
+
+  .cards { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+  .card { background: #fff; border-radius: 8px; padding: 12px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.14); }
+  .card.selected { background: #e8f4e8; }
+  .card-row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .card-name { font-weight: 600; font-size: 0.95em; }
+  .card-time { font-size: 0.9em; color: #555; white-space: nowrap; }
+  .card-row2 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 4px; }
+  .card-category { font-size: 0.85em; color: #666; }
+  .card-room { font-size: 0.82em; color: #999; white-space: nowrap; }
+
+  .sort-controls { max-width: 600px; margin: 0 auto 10px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .sort-controls label { font-weight: 600; font-size: 0.9em; }
+  .sort-btn { padding: 4px 12px; border: 1px solid #ccc; border-radius: 14px; background: #fff; font-size: 0.82em; cursor: pointer; }
+  .sort-btn.active { background: #2c3e50; color: #fff; border-color: #2c3e50; }
+  .sort-btn:hover:not(.active) { background: #eee; }
+
+  .count { text-align: center; max-width: 600px; margin: 10px auto 0; font-size: 0.85em; color: #777; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+  .overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 12px; padding: 24px 20px; max-width: 400px; width: 100%; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+  .modal-name { font-weight: 700; font-size: 1.1em; margin-bottom: 12px; }
+  .modal-detail { font-size: 0.92em; color: #555; margin-bottom: 6px; }
+  .modal-detail span { color: #333; font-weight: 500; }
+  .modal-actions { margin-top: 18px; display: flex; gap: 10px; }
+  .modal-actions a, .modal-actions button { flex: 1; padding: 10px; border-radius: 8px; font-size: 0.9em; text-align: center; text-decoration: none; cursor: pointer; border: none; font-weight: 600; }
+  .btn-share { background: #34a853; color: #fff; }
+  .btn-share:hover { background: #2d9249; }
+  .btn-close { background: #eee; color: #333; }
+  .btn-close:hover { background: #ddd; }
 </style>
 </head>
 <body>
 
-<h1>Kids Fine Arts Presentation Schedule</h1>
+<h1>Kids Fine Arts Schedule</h1>
 
 <div class="controls">
-  <label>Filter by name:</label>
+  <label>Filter:</label>
   <select id="nameFilter">
     <option value="">-- Add a person/group --</option>
   </select>
-  <label>Search:</label>
-  <input type="text" id="searchBox" placeholder="Type to search...">
+  <input type="text" id="searchBox" placeholder="Search...">
 </div>
 <div class="controls" id="tagBar">
   <button id="clearAll" onclick="clearFilters()">Clear All</button>
 </div>
-<div class="count" id="count"></div>
 
-<table>
-  <thead>
-    <tr>
-      <th data-col="0">Individual/Group <span class="arrow"></span></th>
-      <th data-col="1">Category <span class="arrow"></span></th>
-      <th data-col="2">Room <span class="arrow"></span></th>
-      <th data-col="3">Date/Time <span class="arrow"></span></th>
-    </tr>
-  </thead>
-  <tbody id="tbody"></tbody>
-</table>
+<div class="sort-controls">
+  <label>Sort:</label>
+  <button class="sort-btn" data-col="3" onclick="setSort(3)">Time</button>
+  <button class="sort-btn" data-col="0" onclick="setSort(0)">Name</button>
+  <button class="sort-btn" data-col="1" onclick="setSort(1)">Category</button>
+  <button class="sort-btn" data-col="2" onclick="setSort(2)">Room</button>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-name" id="modalName"></div>
+    <div class="modal-detail">Category: <span id="modalCategory"></span></div>
+    <div class="modal-detail">Room: <span id="modalRoom"></span></div>
+    <div class="modal-detail">Time: <span id="modalTime"></span></div>
+    <div class="modal-actions">
+      <a id="modalShare" class="btn-share" href="#">Share via Text</a>
+      <button class="btn-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+<div class="count" id="count"></div>
 
 <script>
 const DATA = [
@@ -75,7 +101,7 @@ const DATA = [
   ["Bailey, Olivia", "Dramatized Quoting, Solo", "Chapel Suite 3 - 317", "2026-03-14 11:03"],
   ["Bible Buddies", "Worship Dance Troupe, Small", "Chapel Suite 1/2 307-309", "2026-03-14 10:17"],
   ["Blevins, Emmeline", "Piano Solo, Jr.", "Chapel", "2026-03-14 08:40"],
-  ["Blossom, Whitney", "Worship Dance, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-14 10:35"],
+  ["Blossom, Addie", "Worship Dance, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-14 10:35"],
   ["Eaton, Micah", "Piano Solo, Classical", "Chapel", "2026-03-14 09:35"],
   ["Gospel Girls", "Worship Dance Troupe, Small", "Chapel Suite 1/2 307-309", "2026-03-14 10:12"],
   ["Meyers, Chloe", "American Sign Language Solo", "Chapel Suite 1/2 307-309", "2026-03-14 09:30"],
@@ -90,7 +116,6 @@ let sortCol = 3, sortAsc = true;
 let selectedNames = new Set();
 let searchText = "";
 
-// Build name dropdown
 const nameFilter = document.getElementById("nameFilter");
 const uniqueNames = [...new Set(DATA.map(r => r[0]))].sort();
 uniqueNames.forEach(n => {
@@ -124,7 +149,6 @@ function renderTags() {
     bar.insertBefore(tag, clearBtn);
   });
   clearBtn.style.display = selectedNames.size > 1 ? "inline-block" : "none";
-  // Hide already-selected from dropdown
   nameFilter.querySelectorAll("option").forEach(opt => {
     opt.hidden = opt.value && selectedNames.has(opt.value);
   });
@@ -143,18 +167,22 @@ function clearFilters() {
 }
 
 function formatTime(iso) {
-  const [date, time] = iso.split(" ");
-  const [y, m, d] = date.split("-");
+  const time = iso.split(" ")[1];
   let [h, min] = time.split(":").map(Number);
   const ampm = h >= 12 ? "PM" : "AM";
   h = h % 12 || 12;
-  return `${m}/${d}/${y} ${h}:${String(min).padStart(2,"0")} ${ampm}`;
+  return `${h}:${String(min).padStart(2,"0")} ${ampm}`;
+}
+
+function setSort(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  render();
 }
 
 function render() {
   let rows = DATA.slice();
 
-  // Filter by selected names
   if (selectedNames.size > 0) {
     rows = rows.filter(r => {
       const lastName = r[0].split(",")[0].trim();
@@ -162,55 +190,55 @@ function render() {
     });
   }
 
-  // Filter by search text
   if (searchText) {
     rows = rows.filter(r => r.some(c => c.toLowerCase().includes(searchText)));
   }
 
-  // Sort
   rows.sort((a, b) => {
     let va = a[sortCol], vb = b[sortCol];
-    if (sortCol === 3) { /* date sort as string works with ISO format */ }
     const cmp = va < vb ? -1 : va > vb ? 1 : 0;
     return sortAsc ? cmp : -cmp;
   });
 
-  const tbody = document.getElementById("tbody");
-  tbody.innerHTML = rows.map(r => `<tr>
-    <td class="name-cell" onclick="toggleName('${r[0].replace(/'/g, "\\'")}')">${r[0]}</td>
-    <td>${r[1]}</td>
-    <td>${r[2]}</td>
-    <td>${formatTime(r[3])}</td>
-  </tr>`).join("");
+  const container = document.getElementById("cards");
+  container.innerHTML = rows.map((r, i) => `<div class="card${selectedNames.has(r[0]) ? ' selected' : ''}" onclick="openModal(${DATA.indexOf(r)})">
+    <div class="card-row1">
+      <span class="card-name">${r[0]}</span>
+      <span class="card-time">${formatTime(r[3])}</span>
+    </div>
+    <div class="card-row2">
+      <span class="card-category">${r[1]}</span>
+      <span class="card-room">${r[2]}</span>
+    </div>
+  </div>`).join("");
 
   document.getElementById("count").textContent = `Showing ${rows.length} of ${DATA.length} events`;
 
-  // Update arrows
-  document.querySelectorAll("th .arrow").forEach((el, i) => {
-    el.textContent = i === sortCol ? (sortAsc ? "\u25B2" : "\u25BC") : "";
+  document.querySelectorAll(".sort-btn").forEach(btn => {
+    const col = +btn.dataset.col;
+    btn.classList.toggle("active", col === sortCol);
+    btn.textContent = btn.textContent.replace(/ [▲▼]$/, "");
+    if (col === sortCol) btn.textContent += sortAsc ? " ▲" : " ▼";
   });
 }
 
-function toggleName(name) {
-  if (selectedNames.has(name)) {
-    selectedNames.delete(name);
-  } else {
-    selectedNames.add(name);
+function openModal(idx) {
+  const r = DATA[idx];
+  document.getElementById("modalName").textContent = r[0];
+  document.getElementById("modalCategory").textContent = r[1];
+  document.getElementById("modalRoom").textContent = r[2];
+  document.getElementById("modalTime").textContent = formatTime(r[3]);
+  const msg = `${r[0]} - ${r[1]}\nRoom: ${r[2]}\nTime: ${formatTime(r[3])}`;
+  document.getElementById("modalShare").href = `sms:?&body=${encodeURIComponent(msg)}`;
+  document.getElementById("overlay").classList.add("open");
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById("overlay")) {
+    document.getElementById("overlay").classList.remove("open");
   }
-  renderTags();
-  render();
 }
 
-document.querySelectorAll("th").forEach(th => {
-  th.addEventListener("click", () => {
-    const col = +th.dataset.col;
-    if (sortCol === col) sortAsc = !sortAsc;
-    else { sortCol = col; sortAsc = true; }
-    render();
-  });
-});
-
-// Initial render sorted by time
 render();
 </script>
 
