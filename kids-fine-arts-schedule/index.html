@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Fine Arts Presentation Schedule</title>
+<title>Fine Arts Presentation Schedule</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 16px; color: #333; }
@@ -54,12 +54,26 @@
   .directions-link svg { vertical-align: -2px; margin-right: 4px; }
   .btn-close { background: #eee; color: #333; }
   .btn-close:hover { background: #ddd; }
+
+  .toggle-controls { max-width: 600px; margin: 0 auto 12px; display: flex; gap: 0; justify-content: center; }
+  .toggle-btn { flex: 1; padding: 10px 16px; border: 2px solid #2c3e50; background: #fff; color: #2c3e50; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
+  .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
+  .toggle-btn:not(:first-child) { border-left: none; }
+  .toggle-btn.active { background: #2c3e50; color: #fff; }
+  .toggle-btn:hover:not(.active) { background: #ecf0f1; }
 </style>
 </head>
 <body>
 
-<h1>Kids Fine Arts Schedule</h1>
+<h1 id="pageTitle">Fine Arts Schedule</h1>
 <a class="directions-link" href="https://maps.google.com/?q=40000+Six+Mile+Rd,+Northville,+MI+48168" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#4285f4"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>40000 Six Mile Rd, Northville, MI 48168</a>
+
+<div class="toggle-controls">
+  <button class="toggle-btn active" onclick="setSchedule('kids')">Kids</button>
+  <button class="toggle-btn" onclick="setSchedule('youth')">Youth</button>
+  <button class="toggle-btn" onclick="setSchedule('all')">All</button>
+</div>
 
 <div class="controls">
   <label>Filter:</label>
@@ -97,7 +111,7 @@
 <div class="count" id="count"></div>
 
 <script>
-const DATA = [
+const KIDS_DATA = [
   ["Bailey, Evelyn", "Worship Dance, Solo, Sr.", "Chapel Suite 1/2 307-309", "2026-03-14 11:25"],
   ["Bailey, Evelyn", "Dramatized Quoting, Solo", "Chapel Suite 3 - 317", "2026-03-14 10:55"],
   ["Bailey, Evelyn", "Short Sermon, Sr.", "Chapel Suite 3 - 317", "2026-03-14 09:07"],
@@ -116,17 +130,67 @@ const DATA = [
   ["Tallon, Remy", "Vocal Solo, Female, Sr.", "Students 113", "2026-03-14 10:23"]
 ];
 
+const YOUTH_DATA = [
+  ["Adalee and Sabrina", "Worship Dance Troupe, Small", "Chapel Suite 1/2 307-309", "2026-03-14 11:55"],
+  ["Adalee, Wieland", "Worship Dance, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-13 20:10"],
+  ["Blevins, Adelaide", "Piano Solo, Classical", "Chapel", "2026-03-13 20:08"],
+  ["Dishaw, Trinity", "Short Sermon, Sr.", "Conference Center 105", "2026-03-14 11:11"],
+  ["Eaton, Anneliese", "Piano Solo, Classical", "Chapel", "2026-03-13 20:17"],
+  ["Eaton, Ellie", "Piano Solo, Classical", "Chapel", "2026-03-13 19:59"],
+  ["Everett, Eagon", "Short Sermon, Jr.", "Conference Center 105", "2026-03-13 18:00"],
+  ["Jaren Stepp", "Songwriting", "Students 113", "2026-03-13 18:24"],
+  ["Jaruzel, Gwenyth", "String Solo", "Chapel", "2026-03-14 11:32"],
+  ["JLC Small Vocal Ensemble", "Vocal Ensemble, Small", "Sanctuary", "2026-03-14 10:21"],
+  ["Nelsen, Madelynn", "Vocal Solo, Female, Sr.", "Breakout Room C/D - 107/109", "2026-03-14 11:03"],
+  ["Nelsen, Madelynn", "Short Sermon, Sr.", "Conference Center 105", "2026-03-14 11:53"],
+  ["Schartow, Abigail", "Vocal Solo, Female, Sr.", "Breakout Room C/D - 107/109", "2026-03-14 09:03"],
+  ["Shoot, Elijah", "Piano Solo, Classical", "Chapel", "2026-03-13 19:50"],
+  ["Stepp, Jemma", "Musical Theater, Solo, Jr.", "Chapel Suite 1/2 307-309", "2026-03-13 18:42"],
+  ["Stepp, Jemma", "Short Sermon, Jr.", "Conference Center 105", "2026-03-13 19:45"],
+  ["Tallon, Reyna", "Dramatized Quoting, Solo", "Chapel Suite 3 - 317", "2026-03-13 21:07"],
+  ["Wethy, Maddie", "Vocal Solo, Female, Sr.", "Breakout Room C/D - 107/109", "2026-03-14 09:11"]
+];
+
+let activeSchedule = "kids";
+let DATA = KIDS_DATA;
 let sortCol = 3, sortAsc = true;
 let selectedNames = new Set();
 let searchText = "";
 
 const nameFilter = document.getElementById("nameFilter");
-const uniqueNames = [...new Set(DATA.map(r => r[0]))].sort();
-uniqueNames.forEach(n => {
-  const opt = document.createElement("option");
-  opt.value = n; opt.textContent = n;
-  nameFilter.appendChild(opt);
-});
+
+function setSchedule(schedule) {
+  activeSchedule = schedule;
+  if (schedule === "kids") DATA = KIDS_DATA;
+  else if (schedule === "youth") DATA = YOUTH_DATA;
+  else DATA = KIDS_DATA.concat(YOUTH_DATA);
+
+  document.querySelectorAll(".toggle-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.textContent.toLowerCase() === schedule);
+  });
+
+  const titles = { kids: "Kids Fine Arts Schedule", youth: "Youth Fine Arts Schedule", all: "Fine Arts Schedule" };
+  document.getElementById("pageTitle").textContent = titles[schedule];
+
+  selectedNames.clear();
+  searchText = "";
+  document.getElementById("searchBox").value = "";
+  populateFilter();
+  renderTags();
+  render();
+}
+
+function populateFilter() {
+  nameFilter.innerHTML = '<option value="">-- Add a person/group --</option>';
+  const uniqueNames = [...new Set(DATA.map(r => r[0]))].sort();
+  uniqueNames.forEach(n => {
+    const opt = document.createElement("option");
+    opt.value = n; opt.textContent = n;
+    nameFilter.appendChild(opt);
+  });
+}
+
+populateFilter();
 
 nameFilter.addEventListener("change", () => {
   if (nameFilter.value) {
@@ -178,6 +242,16 @@ function formatTime(iso) {
   return `${h}:${String(min).padStart(2,"0")} ${ampm}`;
 }
 
+function formatDateTime(iso) {
+  const [date, time] = iso.split(" ");
+  const [y, m, d] = date.split("-");
+  let [h, min] = time.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[+m-1]} ${+d}, ${h}:${String(min).padStart(2,"0")} ${ampm}`;
+}
+
 function setSort(col) {
   if (sortCol === col) sortAsc = !sortAsc;
   else { sortCol = col; sortAsc = true; }
@@ -204,11 +278,12 @@ function render() {
     return sortAsc ? cmp : -cmp;
   });
 
+  const hasMultipleDates = new Set(DATA.map(r => r[3].split(" ")[0])).size > 1;
   const container = document.getElementById("cards");
   container.innerHTML = rows.map((r, i) => `<div class="card${selectedNames.has(r[0]) ? ' selected' : ''}" onclick="openModal(${DATA.indexOf(r)})">
     <div class="card-row1">
       <span class="card-name">${r[0]}</span>
-      <span class="card-time">${formatTime(r[3])}</span>
+      <span class="card-time">${hasMultipleDates ? formatDateTime(r[3]) : formatTime(r[3])}</span>
     </div>
     <div class="card-row2">
       <span class="card-category">${r[1]}</span>
@@ -228,11 +303,13 @@ function render() {
 
 function openModal(idx) {
   const r = DATA[idx];
+  const hasMultipleDates = new Set(DATA.map(r => r[3].split(" ")[0])).size > 1;
   document.getElementById("modalName").textContent = r[0];
   document.getElementById("modalCategory").textContent = r[1];
   document.getElementById("modalRoom").textContent = r[2];
-  document.getElementById("modalTime").textContent = formatTime(r[3]);
-  const msg = `${r[0]} - ${r[1]}\nRoom: ${r[2]}\nTime: ${formatTime(r[3])}`;
+  document.getElementById("modalTime").textContent = hasMultipleDates ? formatDateTime(r[3]) : formatTime(r[3]);
+  const timeStr = hasMultipleDates ? formatDateTime(r[3]) : formatTime(r[3]);
+  const msg = `${r[0]} - ${r[1]}\nRoom: ${r[2]}\nTime: ${timeStr}`;
   document.getElementById("modalShare").href = `sms:?&body=${encodeURIComponent(msg)}`;
   document.getElementById("overlay").classList.add("open");
 }
