@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex,nofollow,noarchive" />
+<title>Ramp-Up (Mac) — Chris × Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: oklch(0.965 0.015 82);
+    --paper-edge: oklch(0.93 0.02 80);
+    --ink: oklch(0.20 0.02 60);
+    --ink-soft: oklch(0.42 0.025 70);
+    --ink-faint: oklch(0.62 0.02 75);
+    --accent: oklch(0.54 0.17 32);
+    --accent-soft: oklch(0.92 0.05 40);
+    --rule: oklch(0.85 0.02 75);
+    --code-bg: oklch(0.22 0.02 60);
+    --code-ink: oklch(0.94 0.015 80);
+    --code-comment: oklch(0.65 0.04 80);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: clamp(15px, 1.1vw + 0.5rem, 17px);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 5rem) clamp(1.5rem, 5vw, 5rem);
+  }
+
+  /* —— Hero ——————————————————————————————— */
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  @media (min-width: 760px) {
+    .hero { grid-template-columns: 1fr 1.6fr; }
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .hero-meta span { display: block; }
+  .hero-meta strong { color: var(--ink); font-weight: 500; }
+
+  .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 380;
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  }
+
+  .hero p {
+    font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.25rem);
+    color: var(--ink-soft);
+    max-width: 38ch;
+    line-height: 1.45;
+  }
+
+  /* —— Section intros ——————————————————————— */
+
+  .section-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    font-size: 1rem;
+    letter-spacing: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  /* —— Steps ——————————————————————————————— */
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: clamp(1.25rem, 3vw, 2.5rem);
+    row-gap: 0.75rem;
+    align-items: baseline;
+  }
+
+  .step-num {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-variation-settings: "opsz" 144;
+    line-height: 0.85;
+    color: var(--accent);
+    grid-row: 1 / 3;
+    align-self: start;
+    padding-top: 0.15em;
+  }
+
+  .step-head h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.2vw + 0.5rem, 2rem);
+    font-variation-settings: "opsz" 144;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  .step-head .est {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    margin-top: 0.4rem;
+    font-weight: 500;
+  }
+
+  .step-body {
+    grid-column: 2;
+    max-width: 56ch;
+  }
+
+  .step-body p { color: var(--ink-soft); margin-bottom: 0.85rem; }
+  .step-body p:last-child { margin-bottom: 0; }
+  .step-body strong { color: var(--ink); font-weight: 600; }
+
+  .step-body a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    transition: opacity 150ms;
+  }
+  .step-body a:hover { opacity: 0.65; }
+
+  ol.do, ul.do {
+    margin: 1rem 0 1.25rem;
+    padding-left: 1.25rem;
+  }
+  ol.do li, ul.do li {
+    color: var(--ink-soft);
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+  }
+  ol.do li::marker {
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* —— Code blocks ——————————————————————————— */
+
+  pre.code {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 1rem 1.15rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.86em;
+    line-height: 1.55;
+    overflow-x: auto;
+    margin: 0.85rem 0 1.25rem;
+  }
+
+  pre.code .c { color: var(--code-comment); font-style: italic; }
+  pre.code .p { color: oklch(0.75 0.12 50); }
+
+  code.inline {
+    background: var(--paper-edge);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+
+  /* —— Callout ———————————————————————————————— */
+
+  .callout {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 1.25rem;
+    color: var(--ink);
+    font-size: 0.95em;
+    line-height: 1.55;
+  }
+
+  .callout strong { color: var(--accent); font-weight: 600; }
+
+  .callout.subtle {
+    background: var(--paper-edge);
+    border-left-color: var(--ink-faint);
+  }
+  .callout.subtle strong { color: var(--ink); }
+
+  /* —— Aside ————————————————————————————————— */
+
+  .aside {
+    background: var(--paper-edge);
+    border-radius: 6px;
+    padding: clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .aside-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .aside-head {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(1.3rem, 1.8vw + 0.5rem, 1.7rem);
+    font-variation-settings: "opsz" 144;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 0.85rem;
+    line-height: 1.1;
+  }
+
+  .aside p {
+    color: var(--ink-soft);
+    margin-bottom: 1.25rem;
+    max-width: 56ch;
+  }
+
+  dl.cmds dt {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.95em;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+
+  dl.cmds dd {
+    color: var(--ink-soft);
+    margin: 0 0 0.85rem 0;
+  }
+
+  dl.cmds dd:last-of-type { margin-bottom: 0; }
+
+  @media (min-width: 600px) {
+    dl.cmds {
+      display: grid;
+      grid-template-columns: minmax(96px, auto) 1fr;
+      align-items: baseline;
+      gap: 0.7rem 1.5rem;
+    }
+    dl.cmds dt,
+    dl.cmds dd { margin: 0; }
+  }
+
+  /* —— Closing ——————————————————————————————— */
+
+  .closing {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 760px) {
+    .closing { grid-template-columns: 1fr 1.6fr; }
+  }
+
+  .closing h3 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+
+  .checklist li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-soft);
+    align-items: baseline;
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist .box {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--ink-faint);
+    border-radius: 2px;
+    margin-top: 0.3em;
+  }
+
+  .checklist strong { color: var(--ink); font-weight: 500; }
+
+  .signoff {
+    margin-top: clamp(3rem, 5vw, 4rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 350;
+    font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.4rem);
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .signoff .name {
+    display: block;
+    font-style: normal;
+    font-weight: 500;
+    color: var(--ink);
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* —— Misc ————————————————————————————————— */
+
+  .pill {
+    display: inline-block;
+    padding: 0.2em 0.7em;
+    background: var(--paper-edge);
+    color: var(--ink-soft);
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    border-radius: 999px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .step, .aside { animation: rise 0.6s ease-out both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* —— PIN Gate ——————————————————————————————— */
+
+  body.locked { overflow: hidden; }
+  body.locked > main { display: none; }
+  body:not(.locked) .pin-gate { display: none; }
+
+  .pin-gate {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 9999;
+  }
+  .pin-card { max-width: 22rem; width: 100%; }
+  .pin-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+  .pin-head {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 380;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 0.85rem;
+  }
+  .pin-sub {
+    color: var(--ink-soft);
+    margin-bottom: 1.25rem;
+    line-height: 1.45;
+  }
+  #pinInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.5em;
+    text-align: center;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 150ms;
+  }
+  #pinInput:focus { border-color: var(--accent); }
+  .pin-error {
+    margin-top: 0.75rem;
+    color: var(--accent);
+    font-size: 0.9rem;
+    min-height: 1.2em;
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+  .pin-error.show { opacity: 1; }
+
+  @media print {
+    .pin-gate { display: none !important; }
+    body.locked > main { display: block !important; }
+    body.locked { overflow: visible !important; }
+  }
+</style>
+</head>
+<body class="locked">
+<div class="pin-gate" aria-label="PIN entry">
+  <div class="pin-card">
+    <div class="pin-label">Private link</div>
+    <h1 class="pin-head">For Chris.</h1>
+    <p class="pin-sub">Enter the 4-digit PIN Andrew sent you to continue.</p>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="pinInput" autocomplete="off" autofocus />
+    <div class="pin-error" id="pinError">Wrong PIN. Try again.</div>
+  </div>
+</div>
+<main class="page">
+
+  <!-- ——— HERO ——— -->
+  <section class="hero">
+    <div class="hero-meta">
+      <span><strong>Prepared for</strong><br>Chris Sharrock</span>
+      <span><strong>From</strong><br>Andrew Bailey</span>
+      <span><strong>Time required</strong><br>~15 minutes</span>
+      <span><strong>Platform</strong><br>macOS</span>
+      <span class="pill">Pre-meeting homework</span>
+    </div>
+    <div>
+      <h1>You're trading the horse<br>for a <em>racecar</em>.</h1>
+      <p>This is the Mac version — for if you spin this up on your personal machine. Two installs, one sanity check. Do them in order. If anything breaks, screenshot it and send it over — we'll fix it together at the meeting instead of getting stuck on it.</p>
+    </div>
+  </section>
+
+  <!-- ——— STEPS ——— -->
+  <section class="steps">
+
+    <!-- Step 1: Warp -->
+    <article class="step">
+      <div class="step-num">1</div>
+      <header class="step-head">
+        <h2>Install Warp</h2>
+        <div class="est">~5 min · free</div>
+      </header>
+      <div class="step-body">
+        <p>Warp is a modern terminal — think of it as a code-aware command line that was built in the AI era. The free tier is plenty for what we're doing.</p>
+        <ol class="do">
+          <li>Go to <a href="https://www.warp.dev/" target="_blank" rel="noopener">warp.dev</a> and click <strong>Download for Mac</strong>. It'll grab the right build for your chip (Apple Silicon or Intel) automatically.</li>
+          <li>Open the <code class="inline">.dmg</code> and drag Warp into Applications.</li>
+          <li>Launch Warp from Applications. macOS will ask you to confirm opening an app from the internet — say yes.</li>
+          <li>Sign in with email or Google. Pick the <strong>Free</strong> plan when asked.</li>
+          <li>You should see a clean window with a prompt blinking at you.</li>
+        </ol>
+        <div class="callout subtle"><strong>What you're looking at:</strong> Warp is where Claude Code will live. Every conversation, every project — they all start with you typing in this window.</div>
+      </div>
+    </article>
+
+    <!-- Step 2: Claude Code -->
+    <article class="step">
+      <div class="step-num">2</div>
+      <header class="step-head">
+        <h2>Install Claude Code</h2>
+        <div class="est">~5 min · uses your Anthropic account</div>
+      </header>
+      <div class="step-body">
+        <p>This is the actual tool. One command in Warp installs it — no Node, no Homebrew, no admin password. Auto-updates are handled for you.</p>
+<pre class="code">curl -fsSL https://claude.ai/install.sh | bash</pre>
+        <p>That'll churn for a minute. When it finishes, <strong>close Warp and reopen it</strong> so the new <code class="inline">claude</code> command is on your PATH, then verify with:</p>
+<pre class="code">claude --version</pre>
+        <p>You should see a version number print out. If you do — you're 90% of the way there.</p>
+        <div class="callout subtle"><strong>If <code class="inline">claude</code> isn't found after restarting Warp:</strong> the installer placed it at <code class="inline">~/.local/bin/claude</code>. Run <code class="inline">echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc</code>, then close and reopen Warp. One-time fix.</div>
+      </div>
+    </article>
+
+    <!-- Aside: terminal basics -->
+    <aside class="aside">
+      <div class="aside-label">Quick aside</div>
+      <h3 class="aside-head">The terminal isn't scary.</h3>
+      <p>It looks intimidating, but honestly — you only really need a handful of commands to get around. Claude Code helps you with the rest. Here's the cheat sheet:</p>
+      <dl class="cmds">
+        <dt>mkdir</dt><dd>Make a directory — like creating a new folder.</dd>
+        <dt>cd</dt><dd>Change directory — like double-clicking into a folder.</dd>
+        <dt>cd ..</dt><dd>Go back up one folder. (Two dots = "the folder above this one.")</dd>
+        <dt>ls</dt><dd>Stands for "list." Shows what's inside the current folder.</dd>
+        <dt>pwd</dt><dd>"Print working directory." Tells you where you are when you're lost.</dd>
+        <dt>clear</dt><dd>Wipes the screen clean. Doesn't delete anything — just gives you a fresh view.</dd>
+      </dl>
+    </aside>
+
+    <!-- Step 3: Sanity check -->
+    <article class="step">
+      <div class="step-num">3</div>
+      <header class="step-head">
+        <h2>The sanity check</h2>
+        <div class="est">~5 min · the magic moment</div>
+      </header>
+      <div class="step-body">
+        <p>This is the moment you'll remember. We're going to make a folder, start Claude inside it, and ask it to do something. Don't skip — this confirms your whole stack works <em>and</em> gives you a feel for the loop.</p>
+
+        <p><strong>In Warp, run these one at a time:</strong></p>
+<pre class="code"><span class="c"># Make a test folder on your desktop</span>
+mkdir ~/Desktop/unleash-test
+cd ~/Desktop/unleash-test
+
+<span class="c"># Start Claude Code in this folder</span>
+claude</pre>
+
+        <p>The first time you run <code class="inline">claude</code>, it'll walk you through signing in. Use the same Anthropic account you use for Claude.ai — Pro or Max plan covers Claude Code at no extra charge.</p>
+
+        <p>Once you're in, paste this prompt and hit enter:</p>
+<pre class="code">Make a file called hello.txt that introduces
+yourself, lists three things you can help with,
+and tells me one thing you find genuinely
+interesting about helping a sales executive
+think more clearly.</pre>
+
+        <p>Watch what happens. It'll think for a second, write the file, then tell you it's done. Open the folder in Finder — <code class="inline">hello.txt</code> will be sitting there, real, on your actual disk.</p>
+
+        <div class="callout"><strong>That's it. That's the unlock.</strong> Claude isn't trapped in a chat window anymore — it's working in your file system, with persistent context, building real artifacts you can keep, share, and iterate on. That's why the chat-only experience felt limiting.</div>
+
+        <p>To exit Claude Code, type <code class="inline">/exit</code> or hit Ctrl+C twice. Your work stays in the folder.</p>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- ——— CLOSING ——— -->
+  <section class="closing">
+    <div>
+      <div class="section-label">Before we meet</div>
+      <h3>Bring this to the table.</h3>
+    </div>
+    <ul class="checklist">
+      <li><span class="box"></span><span><strong>Warp installed</strong> and you've opened it at least once</span></li>
+      <li><span class="box"></span><span><strong>Claude Code working</strong> — <code class="inline">claude --version</code> prints a number</span></li>
+      <li><span class="box"></span><span><strong>You've done the sanity check</strong> and seen <code class="inline">hello.txt</code> appear in your test folder</span></li>
+      <li><span class="box"></span><span><strong>Three rough projects in mind</strong> from your eight categories — the ones you'd actually use this week if it worked</span></li>
+    </ul>
+  </section>
+
+  <div class="signoff">
+    "The chat window was the bicycle. Claude Code is the racecar. You already know how to drive — we're just changing the vehicle."
+    <span class="name">— Andrew</span>
+  </div>
+
+</main>
+<script>
+(function() {
+  const PIN = '5456';
+  const KEY = 'unleash-chris-unlocked';
+  if (sessionStorage.getItem(KEY) === '1') {
+    document.body.classList.remove('locked');
+    return;
+  }
+  const input = document.getElementById('pinInput');
+  const err = document.getElementById('pinError');
+  input.addEventListener('input', () => {
+    err.classList.remove('show');
+    if (input.value.length === 4) {
+      if (input.value === PIN) {
+        sessionStorage.setItem(KEY, '1');
+        document.body.classList.remove('locked');
+      } else {
+        err.classList.add('show');
+        setTimeout(() => { input.value = ''; input.focus(); }, 600);
+      }
+    }
+  });
+  input.focus();
+})();
+</script>
+</body>
+</html>
